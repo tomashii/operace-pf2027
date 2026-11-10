@@ -39,10 +39,28 @@ $('scene-audio').addEventListener('playing',()=>clearTimeout(storyLoadTimer));
 document.addEventListener('keydown',e=>{if(/INPUT|TEXTAREA|SELECT|BUTTON/.test(document.activeElement.tagName))return;if(activeView==='story'){if(e.key==='ArrowLeft')$('prev').click();if(e.key==='ArrowRight')$('next').click();if(e.code==='Space'){e.preventDefault();$('narrate').click()}}if(activeView==='game'&&(e.code==='Space'||e.code==='ArrowUp')){e.preventDefault();jump()}});
 
 const fortuneData={work:['KARAT ti v roce 2027 konečně nechá tlačítko Uložit tam, kde ho čekáš.','Iris s Katkou ti ušetří tolik klikání, že si stihneš vychutnat kávu ještě teplou.','Nejlepší pracovní nápad přijde ve chvíli, kdy zrovna nebudeš mít otevřený e-mail.','Tvůj kalendář bude mít víc volných oken než vánočně vyzdobená kancelář.'],luck:['V roce 2027 se ti splní malé přání, které jsi zatím nikomu neprozradil/a.','Čeká tě tolik příjemných náhod, že začneš podezírat vesmír ze spolupráce.','Tvůj nejšťastnější den přijde úplně nenápadně, zato s pořádnou dávkou smíchu.','Najdeš něco důležitého — možná klíče, možná čas na sebe.'],christmas:['Cukroví letos záhadně zmizí. Hlavním podezřelým budeš ty.','Vánoční klid začne přesně ve chvíli, kdy vypneš pracovní notifikace.','Pod stromečkem najdeš víc radosti než mašlí.','Někdo ti dá ten nejhezčí dárek: svůj čas.'],fun:['Rok 2027 má pro tebe připravený plot twist. Naštěstí ten vtipný.','V důležité chvíli se objeví správný člověk a řekne: „Tady je to Uložit.“','Osud hlásí: aktualizace úspěšná, dobrá nálada nainstalována.','Vesmír ti posílá emoji 🎄 a vzkaz: „Neboj, to nejhezčí teprve přijde.“']};
+let oracleHaptics=true;
+function oracleFeedback(pattern=12){
+ const orb=$('tell-fortune');orb.classList.remove('touch-feedback');void orb.offsetWidth;orb.classList.add('touch-feedback');
+ if(oracleHaptics&&typeof navigator.vibrate==='function'){try{navigator.vibrate(pattern)}catch{}}
+}
+$('oracle-haptics').onclick=()=>{oracleHaptics=!oracleHaptics;$('oracle-haptics').setAttribute('aria-pressed',String(oracleHaptics));$('oracle-haptics').textContent='Haptická odezva · '+(oracleHaptics?'zapnutá':'vypnutá');if(oracleHaptics)oracleFeedback()};
+if(typeof navigator.vibrate!=='function'){$('oracle-haptics').hidden=true;$('oracle-feedback-note').textContent='Koule reaguje světlem a pohybem. Vibrace tento prohlížeč nepodporuje.'}
+else $('oracle-feedback-note').textContent='Jemné vibrace při dotyku a odhalení věštby. Podle nastavení telefonu.';
 let fortuneTopic='work',fortuneLast=-1,fortuneBusy=false,fortuneHistory=[];
-document.querySelectorAll('#oracle-topics [data-topic]').forEach(b=>b.addEventListener('click',()=>{fortuneTopic=b.dataset.topic;document.querySelectorAll('#oracle-topics [data-topic]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));}));
-function castFortune(){if(fortuneBusy)return;fortuneBusy=true;const orb=$('tell-fortune');orb.classList.remove('casting');void orb.offsetWidth;orb.classList.add('casting');$('fortune-result').textContent='Hvězdy přemýšlejí…';const sparks=$('oracle-sparks');sparks.replaceChildren();for(let i=0;i<18;i++){let p=document.createElement('i'),a=i*Math.PI*2/18;p.style.setProperty('--x',(Math.cos(a)*(125+i%3*22))+'px');p.style.setProperty('--y',(Math.sin(a)*(115+i%3*23))+'px');sparks.appendChild(p)}window.setTimeout(()=>{const arr=fortuneData[fortuneTopic];let next=Math.floor(Math.random()*arr.length);if(next===fortuneLast)next=(next+1)%arr.length;fortuneLast=next;const name=$('oracle-name').value.trim();const prediction=(name?name+', ':'')+arr[next];$('fortune-result').textContent=prediction;fortuneHistory.unshift(prediction);fortuneHistory=fortuneHistory.slice(0,3);$('fortune-history').replaceChildren(...fortuneHistory.map(v=>{let p=document.createElement('p');p.textContent='✧ '+v;return p}));orb.classList.remove('casting');fortuneBusy=false},820)}
-$('tell-fortune').addEventListener('click',castFortune);$('fortune-again').addEventListener('click',castFortune);let orbStart=null;$('tell-fortune').addEventListener('pointerdown',e=>{orbStart={x:e.clientX,y:e.clientY}});$('tell-fortune').addEventListener('pointerup',e=>{if(orbStart&&Math.hypot(e.clientX-orbStart.x,e.clientY-orbStart.y)>32)castFortune();orbStart=null});$('copy-fortune').onclick=async()=>{const t=$('fortune-result').textContent;if(!fortuneHistory.length){toast('Nejdřív požádej kouli o předpověď');return}try{await navigator.clipboard.writeText(t);toast('Předpověď zkopírována')}catch{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Předpověď připravena ke sdílení')}};
+document.querySelectorAll('#oracle-topics [data-topic]').forEach(b=>b.addEventListener('click',()=>{fortuneTopic=b.dataset.topic;oracleFeedback(8);document.querySelectorAll('#oracle-topics [data-topic]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));}));
+function castFortune(){if(fortuneBusy)return;fortuneBusy=true;oracleFeedback([12,45,18]);const orb=$('tell-fortune');orb.classList.remove('casting');void orb.offsetWidth;orb.classList.add('casting');$('fortune-result').textContent='Hvězdy přemýšlejí…';const sparks=$('oracle-sparks');sparks.replaceChildren();for(let i=0;i<18;i++){let p=document.createElement('i'),a=i*Math.PI*2/18;p.style.setProperty('--x',(Math.cos(a)*(125+i%3*22))+'px');p.style.setProperty('--y',(Math.sin(a)*(115+i%3*23))+'px');sparks.appendChild(p)}window.setTimeout(()=>{const arr=fortuneData[fortuneTopic];let next=Math.floor(Math.random()*arr.length);if(next===fortuneLast)next=(next+1)%arr.length;fortuneLast=next;const name=$('oracle-name').value.trim();const prediction=(name?name+', ':'')+arr[next];$('fortune-result').textContent=prediction;fortuneHistory.unshift(prediction);fortuneHistory=fortuneHistory.slice(0,3);$('fortune-history').replaceChildren(...fortuneHistory.map(v=>{let p=document.createElement('p');p.textContent='✧ '+v;return p}));orb.classList.remove('casting');oracleFeedback([16,40,24]);fortuneBusy=false},820)}
+$('tell-fortune').addEventListener('click',()=>{if(orbGestureCast){orbGestureCast=false;return}castFortune()});$('fortune-again').addEventListener('click',castFortune);
+let orbStart=null,orbHold=0,orbGestureCast=false;
+const fortuneOrb=$('tell-fortune');
+fortuneOrb.addEventListener('pointerdown',e=>{
+ orbStart={x:e.clientX,y:e.clientY};orbGestureCast=false;oracleFeedback(8);fortuneOrb.classList.add('is-touching');
+ clearTimeout(orbHold);orbHold=setTimeout(()=>{if(orbStart){orbGestureCast=true;castFortune()}},480);
+});
+fortuneOrb.addEventListener('pointermove',e=>{if(!orbStart)return;const dx=e.clientX-orbStart.x,dy=e.clientY-orbStart.y;fortuneOrb.style.setProperty('--touch-x',Math.max(-7,Math.min(7,dx/8))+'px');fortuneOrb.style.setProperty('--touch-y',Math.max(-7,Math.min(7,dy/8))+'px');if(Math.hypot(dx,dy)>28)clearTimeout(orbHold)});
+function releaseOrb(e){clearTimeout(orbHold);if(e.type==='pointerup'&&orbStart&&!orbGestureCast&&Math.hypot(e.clientX-orbStart.x,e.clientY-orbStart.y)>32){orbGestureCast=true;castFortune()}orbStart=null;fortuneOrb.classList.remove('is-touching');fortuneOrb.style.setProperty('--touch-x','0px');fortuneOrb.style.setProperty('--touch-y','0px')}
+fortuneOrb.addEventListener('pointerup',releaseOrb);fortuneOrb.addEventListener('pointercancel',releaseOrb);fortuneOrb.addEventListener('pointerleave',releaseOrb);
+$('copy-fortune').onclick=async()=>{const t=$('fortune-result').textContent;if(!fortuneHistory.length){toast('Nejdřív požádej kouli o předpověď');return}try{await navigator.clipboard.writeText(t);toast('Předpověď zkopírována')}catch{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();toast('Předpověď připravena ke sdílení')}};
 const employeeNames=["Vojtěch Andrle", "Filip Andrle", "Karel Antošík", "Semih Arikan", "Lenka Babková", "Miriam Baďurová", "Karolina Balíková", "Petra Barešová", "Amélie Hana Bariteau", "Michaela Bartončíková", "Radek Bartoš", "Aleš Bebčák", "Lucie Beinová", "Gabriela Benešová", "Martin Beránek", "Pavel Bezděk", "Monika Bílková", "Valentina Bímová", "Josef Blažek", "Štěpán Bodnár", "Pavlína Boháčová", "Jitka Brabencová", "Nikola Brandštetterová", "Barbora Brdková", "Miluše Budínová", "Veronika Budínová", "Jan Budjač", "Lucie Burešová", "Vladimíra Bušková", "Martina Býčková", "Martina Cienciala", "Michala Cikhartová", "Helena Císařová", "Hana Culková", "Tereza Čermáková", "Eva Čermáková", "Nikola Černá", "Gabriela Čížková", "Filip Čoudek", "Petr Čvančara", "Martin Dařílek", "Kamila Dohnalová", "Michal Domašík", "Daniel Dopita", "Petra Dudová", "Ondřej Dušek", "Kristýna Dušková", "Stanislav Dvořák", "Kamila Dvořáková", "Dita Michaela Dvouletá", "Lucie Effenbergerová", "Dana Elgrová", "Karolína Elisová", "Zuzana Farkašová", "David Farský", "Jana Fedorčáková", "Filip Fiala", "Lucie Ficzová", "Iveta Fojtíková", "Petr Fousek", "Ondřej Frič", "Veronika Fritschová", "Kristýna Froschová", "Marta Frýdlová", "Michal Gáll", "Anna Gaubmannová", "Filippo Giusti", "Adam Hába", "Iveta Hájková", "Bára Hanelová", "Lucie Harlasová", "Pavel Haška", "Tomáš Havlíček", "Marcela Hegerová", "David Helma", "Pavel Hendrych", "Karolína Henzlová", "Jiří Hnízdil", "Petra Hodná", "Aneta Holakovská", "Iveta Holanová", "Klára Holubová", "Eliška Horáková", "Lucie Hrabová", "Monika Hradecká", "Lenka Hrubá", "Kateřina Hrušková", "Věra Husáková", "Markéta Chládková", "Kateřina Ihnatová", "Alena Jachová", "Kristýna Janatová", "Alena Janošíková", "Alena Jarolímková", "Anna Jelínková", "Petra Jelínková", "Jaroslav Jenček", "Jakub Jeráček", "Lucie Jersáková", "Dominik Jiráň", "Martin John", "Stanislava Kabelková", "Ivana Kaderová", "Klára Kadeřábková", "Pavla Kadlecová", "Jiří Kala", "Vendula Kalužová", "Michal Kaněra", "Dana Kánská", "Daniela Kapusnicová", "Lukáš Karásek", "Blanka Kebrtová", "Chrysavji Kende", "Dita Kilianová", "Petra Kladišovská", "Martin Klouček", "Iveta Klucká", "Lucie Kluzáková", "Petr Knedla", "Jana Koblížková", "Andrea Kočková", "Lukáš Koděra", "Blanka Kolandová", "Pavel Kolář", "Ondřej Komárek", "Pavla Kondrčíková", "Petra Konopková", "Michal Kopačka", "Jakub Koranda", "Andrea Kořínková", "Veronika Kosťová", "Richard Kotásek", "Nikola Koudelková", "Lenka Kovaříková", "Marie Kozáková", "Silvia Krajčiová", "Petr Král", "Hana Královcová", "Tereza Kraupnerová", "Lukáš Krause", "Nathalie Krkošková", "Jan Křenek", "Karolína Křenová", "Michaela Křížová", "Roman Kuba", "Sara Kubátová", "Hana Kubíčková", "Adéla Kubinec Malechová", "Libor Kubiš", "Mira Kučerová", "Berenika Kuchynková", "Josef Kujal", "Aneta Kutalová", "Vít Kyselý", "Kamila Lacinová", "Hana Lakva", "Michaela Langová", "Jitka Lavičková", "Lenka Líbalová", "Jitka Lohniská", "Marie Lorencová", "Lenka Louženská", "Robert Macuľa", "Jaroslav Macura", "Jan Machalica", "Lucie Machatová", "Radka Machová", "Josef Majer", "Engelbert Malina", "Marcela Mandová", "Tereza Marešová", "Petr Martínek", "Petra Martinková", "Veronika Martinková", "Theodor Matějíček", "Michal Materna", "Jana Matoušková", "Jakub Matyáš", "Kateřina Matysová", "Libor Mečl", "Ondřej Menšík", "Kamila Mertová", "Tomáš Micka", "Simona Milotová", "Zuzana Moro", "Jakub Mráz", "Barbara Mrázková", "Veronika Müllerová", "Nikola Müllerová", "Nikola Muráňová", "Ivana Murgašová", "Dominik Nekula", "Dominika Němečková", "Zdeněk Netík", "Jiří Netopil", "Monika Neuhyblová", "Kristýna Neymanová", "Veronika Nezhybová", "Lucie Nosková", "Jakub Novák", "Monika Nováková", "Jindra Nováková", "Jaroslav Obdržálek", "Nikol Obdržálková", "Renata Obrusníková", "Kateřina Oellerich", "Andrij Oseckyj", "Tomáš Palán", "Ingrid Panuška", "Katarína Papajová", "Andrea Papajová", "Dana Pápayová", "Taťána Parýzková", "Tomáš Pavlát", "Michal Pavlica", "Jitka Pavlíčková", "Johana Pavlík Přikrylová", "Ladislav Pazdera", "Martin Pechan", "Jiří Pejcha", "Martin Peroutka", "Nikola Peterková", "Karolína Petrušková Koryntová", "Tra Giang (Veronika) Phamová", "Lucie Pirnusová", "Petr Pohl", "Ilona Pokorná", "Laura Pokorná", "Karíma Pokorná", "Václav Pop", "Eleonora Portná", "Patrik Posselt", "David Potužák", "Tomáš Prachár", "Zuzana Prachárová", "Adam Přibík", "Michal Přibyl", "Lukáš Přívratský", "Matyáš Rajský", "Zdeněk Reibl", "Jana Reiblová", "Renata Reinová", "Ezdráš Ritschel", "Petra Rosenkrancová", "Kateřina Rounová", "Monika Rubriciusová", "Naděžda Růžičková", "Jan Ryba", "Petra Rydlová", "Veronika Rýnová", "Sylva Řeháková", "Tereza Řehořová", "Karina Řezáčová", "Ivana Sasková", "Petra Sedláčková", "Petr Sejval", "Michaela Sekaninová", "Petra Sellner", "Tereza Sifferlen", "Ivana Singerová", "Aneta Sládková", "Adéla Slámová", "Kateřina Smičková", "Nikola Smith", "Adam Smolka", "Kateřina Smolová", "Petr Soukup", "Lukáš Soukup", "Kristýna Spěváková", "Michaela Srbová", "Gabriela Srbová", "Věra Srdečná", "Tomáš Staněk", "Veronika Staňková", "Lucie Staruchová", "Kateřina Stiborová", "Lucie Stolařová", "Monika Streitová", "Heda Suchanová", "Patrik Svoboda", "Adam Svoboda", "Eliška Svobodová", "Tereza Svobodová", "Ivana Šafaříková", "Jitka Šatavová", "Marcela Šedinová", "Jan Šefčák", "Adam Šenkýř", "Zuzana Šenkýřová", "Lucia Šimánková", "Jana Šimková", "Jan Šimůnek", "Dagmar Šiplová", "Michaela Šiřinová", "Miroslav Škarda", "Kateřina Škrobánková", "Milan Šortner", "Pavel Špringel", "Jaromír Šubrt", "Kateřina Šubrtová", "Jan Šula", "Jana Šuterová", "Jana Švecová", "Pavlína Švehlová", "Jiří Technik", "Marek Tíkal", "Nikola Tomanová", "Lucie Topičová", "Michal Truxa", "Jana Ullrichová", "Jitka Urbanová", "Dominika Urbanová", "Ivana Vacková", "Veronika Valentová", "Jan Váňa", "Jiří Vaněček", "Lada Vašíčková", "Michal Vaverka", "Michaela Vernerová", "Jitka Veselá", "Iveta Vinniková", "Andrea Vítová", "Jiří Vlček", "Alena Vojtová", "Veronika Volf", "Pavel Volf", "Dana Volfová", "Daniela Volná", "Kateřina Vopičková", "Michal Vránek", "Kamila Vránová", "Martin Všechovský", "Tereza Vychytilová", "Pavla Vypiorová", "Zuzana Vystydová", "Jitka Wolfgruber", "Lucie Zachová", "Jana Zálešáková", "Tomáš Zedník", "Dana Zehrerová", "Tomáš Zelený", "Martina Zemánková", "Andrea Zhýbalová", "Jan Zoul", "Martina Žáková", "Michaela Žitná", "Jitka Žižková"];
 const skyPoints=employeeNames.map((name,i)=>{const g=2.399963229728653,theta=i*g,r=Math.sqrt((i+.5)/employeeNames.length);return {name,x:50+43*r*Math.cos(theta),y:50+42*r*Math.sin(theta)}});
 let chosen=[];
@@ -54,8 +72,10 @@ function filterNames(){
  if(!results.length){const p=document.createElement('p');p.className='no-results';p.textContent='Tomuto hledání neodpovídá žádné jméno.';box.append(p)}
  box.scrollTop=scroll;$('star-result-count').textContent=(q?'Nalezeno '+results.length+' z '+employeeNames.length:'Všech '+employeeNames.length+' kolegů')+' · vybráno '+chosen.length;
 }
-function drawStars(){const field=$('star-field');field.querySelectorAll('.sky-star').forEach(x=>x.remove());const frag=document.createDocumentFragment();skyPoints.forEach((p,i)=>{let b=document.createElement('button');b.type='button';b.className='sky-star';b.dataset.index=i;b.style.left=p.x+'%';b.style.top=p.y+'%';b.title=p.name;b.setAttribute('aria-label',p.name);b.setAttribute('aria-pressed',String(chosen.includes(i)));if(chosen.includes(i))b.dataset.label=p.name;b.onclick=()=>selectStar(i);frag.appendChild(b)});field.appendChild(frag);const svg=$('star-lines');svg.replaceChildren();for(let j=1;j<chosen.length;j++){let a=skyPoints[chosen[j-1]],b=skyPoints[chosen[j]];let line=document.createElementNS('http://www.w3.org/2000/svg','line');for(const [key,value] of Object.entries({x1:a.x*10,y1:a.y*5.2,x2:b.x*10,y2:b.y*5.2,stroke:'#f5cd82','stroke-width':2.5,'stroke-linecap':'round'}))line.setAttribute(key,value);svg.appendChild(line)}$('sky-selected-count').textContent=chosen.length+' vybraných';const list=$('selected-stars');list.replaceChildren();if(!chosen.length){list.textContent='Vyber hvězdy kliknutím nebo vyhledáváním.'}else chosen.forEach(i=>{let b=document.createElement('button');b.type='button';b.className='star-chip';b.textContent=skyPoints[i].name+' ×';b.title='Odebrat '+skyPoints[i].name;b.onclick=()=>selectStar(i);list.appendChild(b)});filterNames()}
+function drawStars(){const field=$('star-field');field.querySelectorAll('.sky-star').forEach(x=>x.remove());const frag=document.createDocumentFragment();skyPoints.forEach((p,i)=>{let b=document.createElement('button');b.type='button';b.className='sky-star';b.dataset.index=i;b.style.left=p.x+'%';b.style.top=p.y+'%';b.title=p.name;b.setAttribute('aria-label',p.name);b.setAttribute('aria-pressed',String(chosen.includes(i)));if(chosen.includes(i))b.dataset.label=p.name;b.onclick=()=>selectStar(i);frag.appendChild(b)});field.appendChild(frag);const svg=$('star-lines');svg.replaceChildren();for(let j=1;j<chosen.length;j++){let a=skyPoints[chosen[j-1]],b=skyPoints[chosen[j]];let line=document.createElementNS('http://www.w3.org/2000/svg','line');for(const [key,value] of Object.entries({x1:a.x*10,y1:a.y*5.2,x2:b.x*10,y2:b.y*5.2,stroke:'#f5cd82','stroke-width':2.5,'stroke-linecap':'round'}))line.setAttribute(key,value);svg.appendChild(line)}$('sky-selected-count').textContent=chosen.length+' vybraných';const list=$('selected-stars');list.replaceChildren();if(!chosen.length){list.textContent='Vyber hvězdy kliknutím nebo vyhledáváním.'}else chosen.forEach(i=>{let b=document.createElement('button');b.type='button';b.className='star-chip';b.textContent=skyPoints[i].name+' ×';b.title='Odebrat '+skyPoints[i].name;b.onclick=()=>selectStar(i);list.appendChild(b)});filterNames();renderSelectionMap()}
 function selectStar(i){if(chosen.includes(i))chosen=chosen.filter(v=>v!==i);else chosen.push(i);drawStars()}
+$('toggle-star-map').onclick=()=>{const all=$('star-field').classList.toggle('show-all');$('toggle-star-map').setAttribute('aria-pressed',String(all));$('toggle-star-map').textContent=all?'Jen moje souhvězdí':'Zobrazit všech 347'};
+$('show-my-stars').onclick=()=>{$('star-field').classList.remove('show-all');$('toggle-star-map').setAttribute('aria-pressed','false');$('toggle-star-map').textContent='Zobrazit všech 347';document.querySelector('.sky-main').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'instant':'smooth',block:'start'})};
 $('star-search').oninput=()=>{$('star-results').scrollTop=0;filterNames()};$('clear-stars').onclick=()=>{chosen=[];drawStars()};$('random-stars').onclick=()=>{chosen=[];while(chosen.length<5){const i=Math.floor(Math.random()*employeeNames.length);if(!chosen.includes(i))chosen.push(i)}drawStars()};$('print-stars').onclick=printConstellation;$('sky-total').textContent=String(employeeNames.length);
 // Responsive canvas runner, fixed virtual world independent of screen size.
 const board=$('game-board'),canvas=$('runner-canvas'),ctx=canvas.getContext('2d');const WORLD_W=960,WORLD_H=420;let run={state:'idle',distance:0,score:0,saved:0,best:0,last:0,vy:0,py:0,obstacles:[],buttons:[],spawn:0,bonusSpawn:0,flakes:[]};try{run.best=Number(localStorage.getItem('pf2027_karat_best')||0)||0}catch(e){}$('best').textContent=run.best;
@@ -90,34 +110,6 @@ const snowToggle=document.getElementById('snow-toggle');snowToggle.addEventListe
   const volume=document.getElementById('volume');
   if(audio&&volume){audio.volume=Number(volume.value||0.85); volume.addEventListener('input',()=>audio.volume=Number(volume.value||0.85));}
 
-})();
-
-// Úvodní mise je samostatná brána: žádné změny v logice ostatních aktivit.
-(function initChristmasGate(){
- const gate=document.getElementById('pf-gate');
- const list=document.getElementById('pf-hidden-list');
- const listButton=document.getElementById('pf-open-list');
- const feedback=document.getElementById('pf-gate-feedback');
- const success=document.getElementById('pf-gate-success');
- const key='respect_pf2027_gate_unlocked_v1';
- let unlocked=false;
- try{unlocked=localStorage.getItem(key)==='yes'}catch(e){}
- function release(){gate.hidden=true;document.body.classList.remove('pf-locked');document.querySelectorAll('body > :not(#pf-gate):not(script)').forEach(el=>{el.inert=false;});document.querySelector('.enter-story')?.focus({preventScroll:true})}
- function unlock(){try{localStorage.setItem(key,'yes')}catch(e){}release()}
- if(unlocked){release();return}
- document.body.classList.add('pf-locked');
- document.querySelectorAll('body > :not(#pf-gate):not(script)').forEach(el=>{el.inert=true});
- gate.hidden=false;
- listButton.focus({preventScroll:true});
- function openList(){list.hidden=!list.hidden;listButton.setAttribute('aria-expanded',String(!list.hidden));feedback.textContent=list.hidden?'Prozkoumej seznam v KARATu.':'Aha! Pod seznamem se něco schovalo…';}
- listButton.addEventListener('click',openList);
- document.getElementById('pf-side-seznam').addEventListener('click',()=>{if(list.hidden)openList();listButton.scrollIntoView({block:'nearest'});});
- document.querySelectorAll('[data-pf-decoy]').forEach(btn=>btn.addEventListener('click',()=>{feedback.textContent='V modulu '+btn.dataset.pfDecoy+' tlačítko není. Zkus Seznam.'}));
- document.getElementById('pf-show-hint').addEventListener('click',()=>{feedback.textContent='Rozklikni modře zvýrazněný Seznam a hledej tlačítko Uložit.';listButton.focus({preventScroll:true})});
- document.getElementById('pf-save-button').addEventListener('click',()=>{success.hidden=false;feedback.textContent='Hotovo! Všechno je odemčené.';document.getElementById('pf-enter-world').focus({preventScroll:true})});
- document.getElementById('pf-enter-world').addEventListener('click',unlock);
- document.getElementById('pf-skip-gate').addEventListener('click',unlock);
- gate.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const nodes=[...gate.querySelectorAll('button:not([disabled])')].filter(el=>el.offsetParent!==null);if(!nodes.length)return;const first=nodes[0],last=nodes[nodes.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}});
 })();
 
 /* Interaktivní vánoční stromek — lokální aktivita bez dalších závislostí */
@@ -188,22 +180,56 @@ $('star-field').addEventListener('pointermove',e=>{if(!draggingStar)return;const
 function finishStarDrag(){if(draggingStar?.moved){if(!chosen.includes(draggingStar.i))chosen.push(draggingStar.i);suppressStarClick=true;drawStars();setTimeout(()=>suppressStarClick=false,0)}draggingStar=null}
 $('star-field').addEventListener('pointerup',finishStarDrag);$('star-field').addEventListener('pointercancel',finishStarDrag);
 $('star-field').addEventListener('click',e=>{if(suppressStarClick){e.preventDefault();e.stopImmediatePropagation()}},true);
-function constellationSVG(){
- const ns='http://www.w3.org/2000/svg',svg=document.createElementNS(ns,'svg');svg.setAttribute('xmlns',ns);svg.setAttribute('viewBox','0 0 1200 760');svg.setAttribute('role','img');svg.setAttribute('aria-label','Souhvězdí RESPECTu se jmény vybraných kolegů');
- function node(tag,attrs,text){const el=document.createElementNS(ns,tag);for(const [k,v] of Object.entries(attrs))el.setAttribute(k,String(v));if(text!==undefined)el.textContent=text;svg.append(el);return el}
- node('rect',{width:1200,height:760,fill:'#0d2038'});
- node('text',{x:600,y:52,'text-anchor':'middle',fill:'#f8edd7','font-family':'Arial,sans-serif','font-size':29,'font-weight':700},'Naše souhvězdí RESPECTu');
- node('text',{x:600,y:85,'text-anchor':'middle',fill:'#e9c578','font-family':'Arial,sans-serif','font-size':16},'PF 2027 · Vybráno: '+chosen.length);
- const xy=i=>({x:60+skyPoints[i].x*10.8,y:115+skyPoints[i].y*5.3});
- for(let j=1;j<chosen.length;j++){const a=xy(chosen[j-1]),b=xy(chosen[j]);node('line',{x1:a.x,y1:a.y,x2:b.x,y2:b.y,stroke:'#e9c578','stroke-width':2.2})}
- const size=chosen.length>40?11:chosen.length>20?14:17,measure=document.createElement('canvas').getContext('2d');measure.font=size+'px Arial';const labels=[];
- chosen.forEach(i=>{const p=xy(i),name=skyPoints[i].name,w=measure.measureText(name).width+12,h=size+10;
-  const candidates=[{x:p.x+13,y:p.y-h/2},{x:p.x-w-13,y:p.y-h/2},{x:p.x-w/2,y:p.y+13},{x:p.x-w/2,y:p.y-h-13}].map(r=>({x:Math.max(16,Math.min(1184-w,r.x)),y:Math.max(103,Math.min(708-h,r.y)),w,h}));
-  const overlap=r=>labels.reduce((s,b)=>s+(r.x<b.x+b.w&&r.x+r.w>b.x&&r.y<b.y+b.h&&r.y+r.h>b.y?1:0),0);candidates.sort((a,b)=>overlap(a)-overlap(b));const r=candidates[0];labels.push(r);
-  node('circle',{cx:p.x,cy:p.y,r:5,fill:'#ffe3a3',stroke:'#fff3d3','stroke-width':1});
-  node('rect',{x:r.x,y:r.y,width:r.w,height:r.h,rx:4,fill:'#0d2038','fill-opacity':.93});node('text',{x:r.x+6,y:r.y+size+2,fill:'#fff7e6','font-family':'Arial,sans-serif','font-size':size},name);
+// Shared layout keeps the selected constellation framed at every screen size.
+function selectionLayout(width,height,padding=65){
+ if(!chosen.length)return [];
+ const points=chosen.map(i=>({...skyPoints[i],i})),minX=Math.min(...points.map(p=>p.x)),maxX=Math.max(...points.map(p=>p.x)),minY=Math.min(...points.map(p=>p.y)),maxY=Math.max(...points.map(p=>p.y));
+ const scale=Math.min((width-2*padding)/Math.max(30,maxX-minX),(height-2*padding)/Math.max(25,maxY-minY));
+ return points.map(p=>({...p,x:width/2+(p.x-(minX+maxX)/2)*scale,y:height/2+(p.y-(minY+maxY)/2)*scale}));
+}
+function svgNode(parent,tag,attrs={},text){const el=document.createElementNS('http://www.w3.org/2000/svg',tag);Object.entries(attrs).forEach(([k,v])=>el.setAttribute(k,String(v)));if(text!==undefined)el.textContent=text;parent.append(el);return el}
+function constellationLabels(svg,points,width,height,size,offsetX=0,offsetY=0){
+ const measure=document.createElement('canvas').getContext('2d');measure.font='500 '+size+'px Arial';const occupied=[];
+ points.forEach(p=>{
+  const w=Math.min(width-16,measure.measureText(p.name).width+18),h=size+15;
+  const opts=[];for(const gap of [14,40,70,105])for(const [dx,dy] of [[gap,-h/2],[-w-gap,-h/2],[-w/2,gap],[-w/2,-h-gap]])opts.push({x:Math.max(8,Math.min(width-w-8,p.x+dx)),y:Math.max(8,Math.min(height-h-8,p.y+dy)),w,h});
+  const cost=r=>occupied.reduce((v,b)=>v+Math.max(0,Math.min(r.x+r.w,b.x+b.w)-Math.max(r.x,b.x))*Math.max(0,Math.min(r.y+r.h,b.y+b.h)-Math.max(r.y,b.y)),0)*100+Math.hypot(r.x+r.w/2-p.x,r.y+r.h/2-p.y);
+  opts.sort((a,b)=>cost(a)-cost(b));const r=opts[0];occupied.push(r);
+  const x=p.x+offsetX,y=p.y+offsetY;
+  svgNode(svg,'line',{x1:x,y1:y,x2:offsetX+Math.max(r.x,Math.min(r.x+w,p.x)),y2:offsetY+Math.max(r.y,Math.min(r.y+h,p.y)),stroke:'#c9ae7d','stroke-width':.8,opacity:.65});
+  svgNode(svg,'circle',{cx:x,cy:y,r:12,fill:'#e6c78c',opacity:.12});svgNode(svg,'circle',{cx:x,cy:y,r:4,fill:'#fff1c5'});
+  svgNode(svg,'rect',{x:r.x+offsetX,y:r.y+offsetY,width:w,height:h,rx:7,fill:'#102b43','fill-opacity':.94,stroke:'#dec998','stroke-opacity':.18});
+  svgNode(svg,'text',{x:r.x+offsetX+9,y:r.y+offsetY+size+3,fill:'#fff5df','font-family':'Arial,sans-serif','font-size':size,'font-weight':500},p.name);
  });
- node('text',{x:600,y:736,'text-anchor':'middle',fill:'#bdcfdf','font-family':'Arial,sans-serif','font-size':14},'Spolu tvoříme jeden příběh.');return svg;
+}
+function renderSelectionMap(){
+ const field=$('star-field');field.querySelector('.selection-map')?.remove();const width=Math.max(280,Math.round(field.clientWidth||600)),height=width<500?370:470;
+ const svg=svgNode(field,'svg',{class:'selection-map',viewBox:'0 0 '+width+' '+height,role:'img','aria-label':chosen.length?'Souhvězdí vybraných kolegů':'Vyber kolegy ze seznamu pod mapou'});
+ if(!chosen.length){svgNode(svg,'text',{x:width/2,y:height/2-15,'text-anchor':'middle',fill:'#e8cd9a','font-size':32},'✧');svgNode(svg,'text',{x:width/2,y:height/2+22,'text-anchor':'middle',fill:'#d2deea','font-family':'Arial,sans-serif','font-size':14},'Tady se rozsvítí tvoje parta.');return}
+ const points=selectionLayout(width,height,width<500?60:85);
+ svgNode(svg,'polyline',{points:points.map(p=>p.x+','+p.y).join(' '),fill:'none',stroke:'#efd29c','stroke-width':1.6,'stroke-linejoin':'round'});
+ constellationLabels(svg,points,width,height,chosen.length>25?10:width<500?12:15);
+}
+new ResizeObserver(()=>{if(activeView==='stars')renderSelectionMap()}).observe($('star-field'));
+function constellationSVG(){
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');Object.entries({xmlns:'http://www.w3.org/2000/svg',viewBox:'0 0 1200 848',role:'img','aria-label':'Vánoční hvězdná mapa RESPECTu se jmény vybraných kolegů'}).forEach(([k,v])=>svg.setAttribute(k,v));
+ const n=(tag,attrs,text)=>svgNode(svg,tag,attrs,text),defs=n('defs',{});
+ const bg=svgNode(defs,'radialGradient',{id:'winter-nebula',cx:'25%',cy:'70%',r:'90%'});svgNode(bg,'stop',{offset:'0%','stop-color':'#22576b'});svgNode(bg,'stop',{offset:'55%','stop-color':'#122b46'});svgNode(bg,'stop',{offset:'100%','stop-color':'#091629'});
+ n('rect',{width:1200,height:848,fill:'#f8f3e8'});n('rect',{x:18,y:18,width:1164,height:812,rx:12,fill:'none',stroke:'#c8a568','stroke-width':1});
+ n('text',{x:55,y:64,fill:'#365066','font-family':'Arial,sans-serif','font-size':12,'letter-spacing':3},'RESPECT / VÁNOČNÍ HVĚZDNÁ MAPA');
+ n('text',{x:1144,y:67,fill:'#aa8347','font-family':'Georgia,serif','font-size':28,'text-anchor':'end'},'PF 2027');
+ n('text',{x:56,y:136,fill:'#112d45','font-family':'Georgia,serif','font-size':57},'Každý z nás je hvězda.');
+ n('text',{x:58,y:182,fill:'#61717c','font-family':'Arial,sans-serif','font-size':19},'Společně tvoříme souhvězdí, které má svůj příběh.');
+ n('rect',{x:44,y:219,width:1112,height:460,rx:24,fill:'url(#winter-nebula)'});
+ for(let i=0;i<145;i++){const x=60+(i*613.7)%1080,y=235+(i*137.9)%425;n('circle',{cx:x,cy:y,r:i%11===0?1.7:.8,fill:i%3?'#c9deeb':'#f1d6a5',opacity:.18+(i%5)*.1})}
+ for(const r of [180,290,400])n('circle',{cx:270,cy:460,r,fill:'none',stroke:'#9fb9cb','stroke-width':.6,'stroke-opacity':.12});
+ const points=selectionLayout(1064,420,100);n('polyline',{points:points.map(p=>(p.x+68)+','+(p.y+239)).join(' '),fill:'none',stroke:'#e5c589','stroke-width':2,'stroke-linejoin':'round'});
+ constellationLabels(svg,points,1064,420,chosen.length>40?11:chosen.length>20?15:21,68,239);
+ n('text',{x:64,y:724,fill:'#9d793e','font-family':'Arial,sans-serif','font-size':11,'letter-spacing':2},'NAŠE PARTA / '+chosen.length+' '+(chosen.length===1?'HVĚZDA':chosen.length<5?'HVĚZDY':'HVĚZD'));
+ n('text',{x:64,y:763,fill:'#18354b','font-family':'Georgia,serif','font-size':27},'Ty nejhezčí věci vznikají mezi lidmi.');
+ n('text',{x:64,y:795,fill:'#657786','font-family':'Arial,sans-serif','font-size':14},'Krásné Vánoce a nový rok plný společných zážitků.');
+ n('text',{x:1125,y:789,fill:'#c2a269','font-family':'Georgia,serif','font-size':91,'font-style':'italic','text-anchor':'end',opacity:.62},'r');
+ return svg;
 }
 function prepareConstellationPrint(){document.body.classList.add('constellation-printing');const target=$('constellation-print');target.replaceChildren(constellationSVG());return target}
 function printConstellation(){if(!chosen.length){toast('Nejdřív vyber alespoň jednu hvězdu');return}prepareConstellationPrint();window.print()}
@@ -223,7 +249,7 @@ async function downloadConstellationPDF(){
   const svg=new XMLSerializer().serializeToString(constellationSVG());
   source=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml;charset=utf-8'}));
   const picture=new Image();await new Promise((resolve,reject)=>{picture.onload=resolve;picture.onerror=reject;picture.src=source});
-  const canvas=document.createElement('canvas');canvas.width=2400;canvas.height=1520;canvas.getContext('2d').drawImage(picture,0,0,canvas.width,canvas.height);
+  const canvas=document.createElement('canvas');canvas.width=2400;canvas.height=1696;canvas.getContext('2d').drawImage(picture,0,0,canvas.width,canvas.height);
   const pictureBlob=await new Promise(resolve=>canvas.toBlob(resolve,'image/jpeg',.95));if(!pictureBlob)throw Error('Nelze vytvořit PDF.');
   const jpeg=new Uint8Array(await pictureBlob.arrayBuffer()),encoder=new TextEncoder(),parts=[],offsets=[0];let size=0;
   const add=value=>{const bytes=typeof value==='string'?encoder.encode(value):value;parts.push(bytes);size+=bytes.length};
@@ -232,8 +258,8 @@ async function downloadConstellationPDF(){
   object(1,'<< /Type /Catalog /Pages 2 0 R >>');
   object(2,'<< /Type /Pages /Kids [3 0 R] /Count 1 >>');
   object(3,'<< /Type /Page /Parent 2 0 R /MediaBox [0 0 841.89 595.28] /Resources << /XObject << /Image1 4 0 R >> >> /Contents 5 0 R >>');
-  offsets[4]=size;add('4 0 obj\n<< /Type /XObject /Subtype /Image /Width 2400 /Height 1520 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpeg.length+' >>\nstream\n');add(jpeg);add('\nendstream\nendobj\n');
-  const commands='q\n796.53 0 0 504.47 22.68 45.40 cm\n/Image1 Do\nQ\n';object(5,'<< /Length '+encoder.encode(commands).length+' >>\nstream\n'+commands+'endstream');
+  offsets[4]=size;add('4 0 obj\n<< /Type /XObject /Subtype /Image /Width 2400 /Height 1696 /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length '+jpeg.length+' >>\nstream\n');add(jpeg);add('\nendstream\nendobj\n');
+  const commands='q\n841.89 0 0 595.28 0 0 cm\n/Image1 Do\nQ\n';object(5,'<< /Length '+encoder.encode(commands).length+' >>\nstream\n'+commands+'endstream');
   const xref=size;add('xref\n0 6\n0000000000 65535 f \n');for(let i=1;i<=5;i++)add(String(offsets[i]).padStart(10,'0')+' 00000 n \n');add('trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n'+xref+'\n%%EOF\n');
   const url=URL.createObjectURL(new Blob(parts,{type:'application/pdf'})),link=document.createElement('a');link.href=url;link.download='RESPECT-souhvezdi-PF2027.pdf';document.body.append(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),5000);toast('PDF je připravené ke stažení.');
  }catch(e){toast('PDF se nepodařilo vytvořit. Použij tisk nebo stažení SVG.')}finally{if(source)URL.revokeObjectURL(source);button.disabled=false}

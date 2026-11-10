@@ -45,3 +45,17 @@ uložení, opakované odeslání bez duplicity, odmítnutí změněného pokusu,
 nesprávného skóre a jiného prohlížeče, limit startů a zákaz anon přístupu.
 Živé nasazení ve vašem Vercelu ani vaše Supabase databáze nebyly ověřeny.
 Nové propojení zatím nebylo ověřeno v reálném mobilním prohlížeči.
+
+MOBILNÍ ÚPRAVY 10. 11. 2026
+Odstraněna úvodní mise včetně HTML a JS, web je přímo přístupný.
+Ověřen stromek, světýlka a dárek v mobilním náhledu. Mapa má pevnou
+výšku 370 px na mobilu a je před seznamem; výběr vykresluje samostatné
+čitelně popsané SVG. Ověřen náhodný výběr i hledání Zizkova.
+Nové PDF staženo z hlavní stránky, zkontrolováno a vyrenderováno: jedna
+A4 naležato, poměr stran výtvarného návrhu odpovídá celé stránce.
+Export z iframe testovacího prohlížeče nevydal událost stažení; přímý
+export fungoval. Fyzický tisk a Safari nebyly ověřeny.
+Věštírna: ověřena personalizovaná předpověď, text se vejde do koule.
+Haptika je feature-detected navigator.vibrate s vizuálním fallbackem.
+Skutečné vibrace vyžadují podporovaný telefon; hardwarově netestováno.
+API, SQL i server jsou totožné s předchozí verzí, 4 backend testy prošly.

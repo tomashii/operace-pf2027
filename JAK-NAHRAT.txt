@@ -17,11 +17,11 @@ Nepoužívejte publishable/anon ani starý JWT service_role klíč.
 Tajný klíč patří jen do nastavení Vercelu, nikdy do public/, GitHubu či chatu.
 
 3. VERCEL: TŘI PROMĚNNÉ
-Otevřete stávající projekt operace-vanoc > Settings > Environment Variables.
+Otevřete stávající projekt operace-vanoce > Settings > Environment Variables.
 Pro prostředí Production přidejte:
 SUPABASE_URL = Project URL z kroku 2
 SUPABASE_SECRET_KEY = celý sb_secret_... klíč z kroku 2
-APP_ORIGIN = https://operace-vanoc.vercel.app
+APP_ORIGIN = https://operace-vanoce.vercel.app
 Hodnoty vkládejte bez uvozovek a bez mezer kolem nich.
 APP_ORIGIN musí přesně odpovídat adrese, na které lidé hrají, bez / na konci
 ani #home. Při vlastní doméně změňte APP_ORIGIN na tuto doménu.
@@ -51,9 +51,9 @@ nebo znovu npx vercel --prod). Pouhý Redeploy starého zdroje nový ZIP nenahra
 
 5. OVĚŘENÍ
 Po úspěšném nasazení otevřete:
-https://operace-vanoc.vercel.app/api/status
+https://operace-vanoce.vercel.app/api/status
 Správná odpověď obsahuje "ok":true a zprávu o připojení Supabase.
-Potom otevřete https://operace-vanoc.vercel.app/#game, zahrajte NOVOU hru,
+Potom otevřete https://operace-vanoce.vercel.app/#game, zahrajte NOVOU hru,
 vyplňte přezdívku a stiskněte Uložit skóre. Hra se neukládá automaticky.
 V Supabase Table Editoru musí přibýt řádek v pf2027_runner_scores.
 Zkuste jiný prohlížeč: společné TOP 10 má ukazovat stejná data.

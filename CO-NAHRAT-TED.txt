@@ -1,0 +1,35 @@
+AKTUALIZACE MOBILNÍHO WEBU — 10. 11. 2026
+
+Supabase již máte nastavené. SQL znovu spouštět nemusíte.
+Proměnné ve Vercelu neměňte. Databáze ani uložená skóre se nemažou.
+
+NEJJEDNODUŠŠÍ AKTUALIZACE STÁVAJÍCÍHO PROJEKTU
+V repozitáři, ze kterého Vercel nasazuje váš web, nahraďte tyto 3 soubory:
+ public/index.html
+ public/styles.css
+ public/app.js
+Cesty musí zůstat stejné. Potvrďte změny (Commit changes).
+Počkejte, až nové nasazení ve Vercelu získá zelený stav Ready.
+Pouhé Redeploy bez nahrání změněných souborů nové úpravy nepřenese.
+
+Případně nahrajte celý obsah ZIPu jako předtím. Je v něm stejný backend.
+Pro nahrání přes Vercel CLI z rozbalené složky:
+ npx vercel link
+ npx vercel --prod
+Při link vyberte EXISTUJÍCÍ projekt operace-vanoce ve svém účtu/týmu.
+
+OVĚŘENÍ
+Na mobilu zavřete starou kartu webu a otevřete web znovu. Případně obnovte.
+- Úvodní hledání tlačítka Uložit už se nezobrazí.
+- Stromek: všech 5 ozdob, 3 dárky, text a tlačítka mají vlastní místo.
+- Souhvězdí: mapa je na mobilu nad seznamem kolegů. Vyberte kolegy
+  a použijte Zobrazit moje souhvězdí. Přepínač ukáže i všech 347 hvězd.
+- PDF/SVG: nový vánoční návrh se světlým rámem, hvězdnou mapou a jmény.
+  PDF má jednu A4 naležato; při tisku případně zvolte Přizpůsobit stránce.
+- Věštírna: decentní r v kouli, reakce na dotyk, podržení a pohyb.
+  V podporovaných prohlížečích jemně vibruje; lze vypnout tlačítkem.
+  Safari na iPhonu nemá Vibration API, tam zůstává světelná/pohybová odezva.
+- Vánoční běh a ukládání výsledků do Supabase jsou zachované.
+
+Tato verze byla ověřena v Chrome na desktopu a v mobilních iframe náhledech
+šířky 320 a 390 px. Skutečný iPhone ani fyzické vibrace nebyly otestovány.

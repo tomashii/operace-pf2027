@@ -262,3 +262,84 @@ nav.winter-dock .dock-item:active{box-shadow:inset 0 2px 9px rgba(2,12,24,.16)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){nav.winter-dock{background:rgba(20,40,58,.96)}}
 @media(prefers-reduced-transparency:reduce){nav.winter-dock{background:rgba(20,40,58,.97);-webkit-backdrop-filter:none;backdrop-filter:none}}
 @media(prefers-contrast:more){nav.winter-dock{background:#10283e;border-color:#fff}nav.winter-dock .dock-item{color:#fff}nav.winter-dock .dock-item[aria-current="page"]{border-color:#fff!important;color:#fff}}
+
+/* Mobile refinement, November 2026. The tree stays inside one coordinate system. */
+#view-home .welcome-picture:after{display:none}
+.xmas-experience{min-height:0;padding:22px 18px 24px;display:flex;flex-direction:column;gap:14px}
+.xmas-topline{flex-wrap:wrap;row-gap:8px;line-height:1.6;letter-spacing:.08em}
+.xmas-topline span:last-child{white-space:nowrap}
+.xmas-tree-stage{width:min(100%,360px);height:auto;aspect-ratio:1/1.08;margin:0 auto;transform:none;flex:none}
+.xmas-glow{width:100%;height:90%;top:0}
+.xmas-tree{width:94%;height:79%;top:10%;left:50%}
+.xmas-layer-1{top:0;width:54%;height:55%}.xmas-layer-2{top:25%;width:76%;height:55%}.xmas-layer-3{top:50%;width:100%;height:50%}
+.xmas-trunk{bottom:-4%;height:15%;width:10%;left:45%}
+.xmas-star{top:0;font-size:clamp(33px,9vw,44px);line-height:1}
+.xmas-bauble{width:32px;height:32px;min-height:0;padding:0}
+.xmas-bauble-1{top:27%;left:calc(50% - 16px)}
+.xmas-bauble-2{top:44%;left:calc(33% - 16px)}
+.xmas-bauble-3{top:43%;right:calc(33% - 16px)}
+.xmas-bauble-4{top:63%;left:calc(26% - 16px)}
+.xmas-bauble-5{top:64%;right:calc(26% - 16px)}
+.xmas-gifts{bottom:0;width:82%;height:22%;gap:4%}
+.xmas-gift{width:27%;height:65%;padding:0;min-height:0}
+.xmas-gift-2{height:90%}.xmas-gift-3{height:60%}
+.xmas-gift:before{left:42%;width:17%}.xmas-gift:after{top:40%;height:17%}
+.xmas-bow{left:30%;width:37%;height:28%;top:-20%;border-width:4px}
+.xmas-message{min-height:3.2em;margin:0;padding:2px 0;font-size:13px;line-height:1.6;text-wrap:pretty}
+.xmas-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:stretch;gap:8px}
+.xmas-action,.xmas-reset{min-height:46px;white-space:normal;line-height:1.35;font-size:11px;padding:10px 12px}
+/* Selected constellations have an explicit, non-collapsing viewport. */
+.sky-main{align-self:start;scroll-margin-top:18px}
+.sky-top{flex-wrap:wrap;gap:10px}
+.sky-map-tools{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:12px 18px;color:#cddcea;font-size:12px;border-bottom:1px solid #d1e3f01a}
+.sky-map-tools button{border:1px solid #dec38d66;background:#e8ca9120;color:#fae5bc;border-radius:999px;font-size:11px;padding:9px 12px;min-height:40px}
+#star-field{flex:0 0 auto;height:470px;min-height:470px;width:100%;position:relative}
+.selection-map{display:block;position:absolute;inset:0;width:100%;height:100%;z-index:5;pointer-events:none}
+#star-field.selection-mode:not(.show-all)>.sky-star,#star-field.selection-mode:not(.show-all)>.star-line{visibility:hidden;pointer-events:none}
+#star-field.show-all>.selection-map{display:none}
+#star-field.show-all>.sky-star[aria-pressed=false]{opacity:.55}
+#show-my-stars{font-size:12px}
+.selected-list{max-height:180px;overflow:auto;padding:16px;gap:8px}
+.star-chip{min-height:40px;max-width:100%;white-space:normal;text-align:left}
+/* The monogram stays behind the prediction, with responsive text inside the sphere. */
+.orb-monogram{position:absolute;left:50%;top:46%;transform:translate(-50%,-50%);font:italic 200px Georgia,serif;color:#d0e6ff;opacity:.085;pointer-events:none;line-height:1}
+.orb-message,.orb-stars,.orb-bottom{position:relative;z-index:2}
+.orb-message{font-size:clamp(15px,1.6vw,21px);line-height:1.45;margin:12px 0;overflow-wrap:anywhere}
+.orb-stars{font-size:18px;letter-spacing:6px}
+.orb-bottom{font-size:9px;letter-spacing:.17em}
+.orb-interactive{width:min(350px,100%);height:auto;aspect-ratio:1;padding:28px;transform:translate(var(--touch-x,0px),var(--touch-y,0px));-webkit-tap-highlight-color:transparent}
+.orb-interactive.is-touching{filter:brightness(1.14);box-shadow:inset -32px -28px 56px #02071da8,0 0 90px #8cbef899}
+.orb-interactive.touch-feedback:after{content:'';position:absolute;inset:0;border:1px solid #f5dfb1;border-radius:50%;pointer-events:none;animation:oracle-touch .65s ease-out forwards}
+.oracle-haptics{border:1px solid #e6cd9655;background:transparent;border-radius:20px;color:#f3d9a9;padding:10px 14px;font-size:12px;min-height:42px;margin-top:16px}
+.oracle-feedback-note{font-size:11px;line-height:1.6;color:#b8cbdc;margin:10px 0 0}
+.oracle-stage{padding:34px 24px;gap:16px;min-height:480px}
+.oracle-hint{font-size:12px;line-height:1.6;max-width:300px;padding:0;margin:0;text-align:center}
+@keyframes oracle-touch{from{transform:scale(.98);opacity:.8}to{transform:scale(1.12);opacity:0}}
+@media(max-width:850px){
+ .sky-layout{display:flex;flex-direction:column;gap:18px}
+ .sky-main,.sky-side{width:100%}.sky-main{order:-1}
+ #star-field{height:370px;min-height:370px}
+ .sky-side .star-results{max-height:270px}
+ .oracle-stage{min-height:0;padding:30px 24px}
+}
+@media(max-width:520px){
+ .xmas-experience{padding:18px 14px 22px;border-radius:24px;gap:14px}
+ .xmas-tree-stage{transform:none;margin:0 auto;aspect-ratio:1/1.12}
+ .xmas-topline{font-size:9px}.xmas-topline span:first-child{max-width:65%}
+ .xmas-message{font-size:12px}.xmas-actions{grid-template-columns:minmax(0,1fr) 80px}
+ .oracle-layout{gap:16px}.oracle-controls{padding:22px 18px}
+ .orb-interactive{width:min(300px,100%);height:auto;padding:25px}
+ .orb-message{font-size:15px;line-height:1.4;margin:12px 0}
+ .orb-monogram{font-size:170px}.orb-bottom{font-size:8px;letter-spacing:.12em}
+ .oracle-topics{gap:8px}.oracle-topics button{min-height:48px;padding:10px 8px;font-size:13px}
+ .oracle-cta{display:grid;grid-template-columns:1fr;gap:10px}
+ .sky-map-tools{padding:10px 14px}.sky-map-tools>span{font-size:11px}
+ .sky-top{font-size:10px;padding:16px 14px}
+ .selected-list{max-height:150px;padding:12px}
+}
+@media(prefers-reduced-motion:reduce){.orb-interactive,.orb-interactive.casting,.orb-interactive.touch-feedback:after{animation:none!important;transition:none!important}.orb-interactive.is-touching{outline:2px solid #ead4a4}}
+@media print{
+ @page{size:A4 landscape;margin:0}
+ body.constellation-printing #constellation-print svg{width:297mm!important;height:210mm!important;max-width:100%!important;overflow:hidden!important}
+}
+@media(max-width:850px){#view-stars .star-results{height:auto;min-height:0;max-height:270px;overflow-y:auto}}
