@@ -1,0 +1,47 @@
+OVĚŘENÍ ZMĚN
+
+Prohlížeč: zobrazeno 347 jmen bez hledání, od Vojtěcha Andrleho
+po Jitku Žižkovou. Ověřen výběr poslední kolegyně bez hledání, hledání
+Zizkova bez diakritiky a opětovné zobrazení všech jmen po vymazání dotazu.
+
+Kontrola skutečných barev i screenshotu tlačítek: tmavý text na světlém
+podkladu, bílý text na tmavém tiskovém tlačítku, zvýrazněný výběr kolegy.
+Mobilní šířka iframe 390 px: 347 položek v posuvném seznamu, čitelná
+tlačítka; pohádka i souhvězdí bez vodorovného přetékání.
+
+PDF staženo přímo z webu, otevřeno a vyrenderováno ke kontrole.
+Výsledek má jednu stránku A4 naležato, vybraná jména s diakritikou
+a spojnici, bez navigace a ostatního UI. Nativní tiskový dialog
+v testovacím prohlížeči nebyl dostupný; tisk na fyzické tiskárně nebyl
+proveden. Připravený tiskový SVG obsahoval jen vybrané kolegy.
+
+Pohádka: žádný img ani video element, načtení audia a automatický
+přechod na další sloku fungují; ověřena pauza a Stop na první sloku.
+Zaznamenán konečný stav poslední sloky bez chyby.
+Znění všech 12 slok, seznam jmen a všechny opravené MP3 zachovány.
+
+Odstraněna samostatná sekce i navigace hry Chyť Uložit!
+Kontrola syntaxe JavaScriptu prošla. ZIP zkontrolován na integritu.
+
+LIQUID GLASS NAVIGACE
+
+Skleněný podklad s rozostřením a sytostí pozadí, světelným okrajem
+a průsvitným aktivním stavem. Pět stejných sloupců CSS gridu.
+Desktop: položky přibližně 103,6 × 74 px. Mobilní iframe 390 px:
+položky přibližně 65,8 × 66 px. Rozdíl zaokrouhlení šířky pod 0,02 px.
+Ověřeno všech pět aktivních stavů na mobilní šířce; aktivace položky
+nemění rozměry. Popisky včetně Vánoční běh se vešly bez oříznutí.
+Vizuální kontrola desktopového i mobilního zobrazení v Chrome.
+Doplněn CSS fallback pro prohlížeče bez backdrop-filter a omezení
+průhlednosti podle systémových preferencí. Skutečný iPhone netestován.
+JavaScript a audio beze změny.
+
+SUPABASE VERZE 10. 11. 2026
+HTML/CSS/zvuk zachovávají předchozí úpravy. JavaScript nově volá API.
+Lokálně prošly 4 testy podpisu a expirace relací, validace skóre,
+vazby na prohlížeč, kontroly Origin, práce s klíčem a chyb databáze.
+SQL ověřeno v PostgreSQL prostřednictvím PGlite: opakovaná migrace,
+uložení, opakované odeslání bez duplicity, odmítnutí změněného pokusu,
+nesprávného skóre a jiného prohlížeče, limit startů a zákaz anon přístupu.
+Živé nasazení ve vašem Vercelu ani vaše Supabase databáze nebyly ověřeny.
+Nové propojení zatím nebylo ověřeno v reálném mobilním prohlížeči.

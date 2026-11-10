@@ -1,0 +1,88 @@
+OPERACE PF 2027 — SUPABASE A VERCEL
+
+Tento ZIP obsahuje celý web s liquid glass navigací a novým serverovým
+propojením žebříčku. Živé připojení vznikne až po následujícím nastavení.
+
+1. SUPABASE: VYTVOŘENÍ TABULEK
+Otevřete svůj projekt v https://supabase.com/dashboard (nebo založte nový).
+SQL Editor > New query. Otevřete SUPABASE-NASTAVENI.sql v textovém editoru,
+zkopírujte celý obsah, vložte do SQL Editoru a klikněte Run.
+SQL přidává tabulky/funkce pf2027_*; existující data nemaže. Lze spustit znovu.
+
+2. SUPABASE: ADRESA A KLÍČ
+Projekt > Connect: zkopírujte Project URL ve tvaru https://ID.supabase.co.
+Projekt > Settings > API Keys: zkopírujte Secret key začínající sb_secret_.
+Pokud není vytvořený, vytvořte nový secret key pro tento web.
+Nepoužívejte publishable/anon ani starý JWT service_role klíč.
+Tajný klíč patří jen do nastavení Vercelu, nikdy do public/, GitHubu či chatu.
+
+3. VERCEL: TŘI PROMĚNNÉ
+Otevřete stávající projekt operace-vanoc > Settings > Environment Variables.
+Pro prostředí Production přidejte:
+SUPABASE_URL = Project URL z kroku 2
+SUPABASE_SECRET_KEY = celý sb_secret_... klíč z kroku 2
+APP_ORIGIN = https://operace-vanoc.vercel.app
+Hodnoty vkládejte bez uvozovek a bez mezer kolem nich.
+APP_ORIGIN musí přesně odpovídat adrese, na které lidé hrají, bez / na konci
+ani #home. Při vlastní doméně změňte APP_ORIGIN na tuto doménu.
+
+4. NAHRÁNÍ CELÉHO WEBU
+Rozbalte ZIP. Hlavní složka obsahuje package.json, vercel.json, api/, server/
+a public/. Nahrajte celý tento obsah do zdroje stávajícího Vercel projektu.
+Soubory index.html, styles.css, app.js a assets jsou nově ve složce public/.
+Neuploadujte pouze public/: chybělo by API. Framework preset: Other,
+Output Directory: public, Build Command: prázdný. Root Directory musí
+ukazovat na složku s package.json a vercel.json. Staré soubory původního
+webu nahraďte obsahem balíčku; nemažte nastavení či data jiných projektů.
+
+BEZ GITHUBU NA WINDOWS:
+Nainstalujte Node.js LTS z https://nodejs.org.
+V Průzkumníku otevřete rozbalenou složku (kde leží package.json), klikněte
+do adresního řádku, napište cmd a potvrďte Enter. Postupně spusťte:
+  npx vercel login
+  npx vercel link
+  npx vercel --prod
+Při link vyberte svůj tým/účet a EXISTUJÍCÍ projekt operace-vanoc.
+Nespojujte složku s jiným projektem. Při dotazu na pracovní složku zvolte ./.
+Příkaz --prod nasadí právě tyto nové soubory a použije Production proměnné.
+Pokud aktualizujete přes repozitář, stačí nasazení nové verze z repozitáře.
+Po pozdější změně proměnných znovu nasaďte projekt (Deployments > Redeploy
+nebo znovu npx vercel --prod). Pouhý Redeploy starého zdroje nový ZIP nenahraje.
+
+5. OVĚŘENÍ
+Po úspěšném nasazení otevřete:
+https://operace-vanoc.vercel.app/api/status
+Správná odpověď obsahuje "ok":true a zprávu o připojení Supabase.
+Potom otevřete https://operace-vanoc.vercel.app/#game, zahrajte NOVOU hru,
+vyplňte přezdívku a stiskněte Uložit skóre. Hra se neukládá automaticky.
+V Supabase Table Editoru musí přibýt řádek v pf2027_runner_scores.
+Zkuste jiný prohlížeč: společné TOP 10 má ukazovat stejná data.
+Staré lokální rekordy se automaticky nepřenesou do společné databáze.
+
+CO KDYŽ TO NEFUNGUJE
+404 na /api/status: nahráli jste starý balíček, pouze public/ nebo špatnou
+kořenovou složku. Musí se nasadit celý projekt včetně api/ a server/.
+503: zkontrolujte tři proměnné, sb_secret_ klíč, aktivní Supabase projekt,
+provedené SQL a nové nasazení po změně proměnných. Ponechte Data API
+zapnuté a veřejné schéma public dostupné pro službu (výchozí nastavení).
+403 při startu: adresa otevřeného webu neodpovídá APP_ORIGIN. Použijte
+produkční adresu, nikoli dočasný náhled nasazení.
+429: příliš mnoho startů hry; počkejte minutu.
+Bez databáze hra běží dál, ale daný pokus se neuloží. Po opravě začněte nový.
+Pokus pro uložení platí nejvýše dvě hodiny od spuštění.
+
+JAK ŽEBŘÍČEK FUNGUJE
+Každý uložený pokus zůstává v databázi. Web ukazuje TOP 10 nejlepších
+výsledků, jeden pro každou přezdívku bez rozlišení velikosti písmen.
+Přezdívka není ověřené přihlášení; pro vlastní záznam používejte unikátní.
+Server kontroluje platnost pokusu, vazbu na prohlížeč, čas a výpočet skóre;
+nejde o úplnou ochranu před podváděním v klientské hře.
+Ukládá se přezdívka, skóre, metriky a čas. Herní relace používají náhodný
+identifikátor v cookie a HMAC otisk IP pro omezení četnosti; ne surovou IP.
+Tajný klíč zůstává pouze na serveru. Přímý přístup anonymních klientů
+k tabulkám a funkcím je zakázaný; RLS zůstává zapnuté.
+
+DALŠÍ ÚPRAVY ZACHOVÁNY
+Pět stejně velkých položek liquid glass navigace; pohádka s 12 původními
+zvukovými stopami bez GIFů; odstraněná hra Chyť Uložit!; všech 347 jmen
+v seznamu souhvězdí, hledání bez diakritiky, tisk, PDF a SVG.

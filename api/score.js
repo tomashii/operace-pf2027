@@ -1,0 +1,2 @@
+import {gate,env,client,db,verify,validateScore,error,fail} from '../server/core.js';
+export default async function handler(req,res){try{gate(req,res,'POST');const e=env(),c=client(req,res,e.secret),s=verify(req.body?.token,e.secret);if(s.client!==c.browser)throw error('Pokus neodpovídá tomuto prohlížeči.');const v=validateScore(req.body,s);const id=await db('rpc/pf2027_save_run',{p_session:s.id,p_client:c.browser,p_nickname:v.nickname,p_score:v.score,p_distance:v.distance,p_saved:v.saved});res.status(200).json({id})}catch(e){fail(res,e)}}
